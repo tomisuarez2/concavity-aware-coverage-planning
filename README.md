@@ -2,7 +2,7 @@ This repository presents an implementation of a coverage path planning algorithm
 
 The method is inspired by the work presented in the paper:
 
-"A Concavity-Aware Decomposition Method for Coverage Path Planning"
+"Coverage Path Planning Method for Agricultural Spraying UAV in Arbitrary Polygon Area"
 Li, J., Sheng, H., Zhang, J., & Zhang, H. (2023)
 https://doi.org/10.3390/aerospace10070755
 
