@@ -25,7 +25,8 @@ function [trajectoryPoints, coveredArea] = generateCoverageTrajectory(waypoints,
     %==============================================================
     % Step 2: Rotate polygon to align scan direction
     %==============================================================
-    rotatedPoints = rotatePolygon(reducedPoints,-psi);
+    centroid = mean(reducedPoints,2); % Polygon centroid
+    rotatedPoints = rotatePolygon(reducedPoints, centroid, -psi);
 
     %==============================================================
     % Step 3: Decompose polygon (remove concavities)
@@ -99,5 +100,5 @@ function [trajectoryPoints, coveredArea] = generateCoverageTrajectory(waypoints,
     %==============================================================
     % Step 5: Rotate trajectory back to original frame
     %==============================================================
-    trajectoryPoints = rotatePolygon(trajectoryPoints,psi);
+    trajectoryPoints = rotatePolygon(trajectoryPoints, centroid, psi);
 end
