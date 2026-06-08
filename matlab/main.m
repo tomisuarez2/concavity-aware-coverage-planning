@@ -8,7 +8,7 @@ close all; clear; clc;
 % "Coverage Path Planning Method for Agricultural Spraying UAV
 % in Arbitrary Polygon Area".
 % Aerospace, 10(7), 755.
-% https://doi.org/10.3390/aerospace10070755
+% https://doi.org/10.3390/aerospace10090755
 %
 % -------------------------------------------------------------------------
 % Description
@@ -23,10 +23,6 @@ close all; clear; clc;
 %   - Detection of concave vertices in polygonal regions.
 %   - Topology-based decomposition of concave polygons.
 %   - Coverage path generation for efficient spraying missions.
-%
-% The algorithm generates a coverage trajectory minimizing:
-%   - Flight distance
-%   - Extra coverage ratio
 %
 % -------------------------------------------------------------------------
 % Repository
@@ -52,12 +48,19 @@ close all; clear; clc;
 % The code is not an official implementation by the original authors of
 % the referenced article.
 
-%% We started by specifying the clockwise waypoints that define the polygon as columns of the following array.
+%% Add paths
 
-% Waypoints
-waypoints = [[0;0],[0;5],[2.5;7.5],[5;5],[7.5;7.5],[10;5],[10;0],[7.5;-2.5],[5;0],[2.5;-2.5]];
+addpath("core\.")
+addpath("decomposition\.")
+addpath("geometry\.")
+addpath("utils\.")
 
-%% Waypoints plot.
+%% We started by specifying the clockwise vertices that define the polygon as columns of the following array.
+
+% Vertices
+vertices = [[0;0],[-2;9],[4;11],[2;5],[9;3]];
+
+%% Vertices plot.
 
 % Plot parameters.
 lw_default = 2.5; 
@@ -82,14 +85,21 @@ title('Trajectory', ...
 ax_main.FontSize = ticks_fontsize;
 ax_main.LineWidth = lw_auxiliary;
      
-plot([waypoints(1,:) waypoints(1,1)], [waypoints(2,:) waypoints(2,1)], 'Color', 'blue', 'Marker', 'o', 'LineWidth', 2, 'DisplayName', 'Waypoints')
+plot([vertices(1,:) vertices(1,1)], [vertices(2,:) vertices(2,1)], 'Color', 'blue', 'Marker', 'o', 'LineWidth', 2, 'DisplayName', 'Vertices')
 
 %% Trajectory computation.
 
 h = 0.1;  % Reduced área offset.
 d = 0.25; % Spray fumigation width.
-psi = 70; % Trajectory orientation from +X. [°]
-[trajectoryPoints, coveredArea] = generateCoverageTrajectory(waypoints, h, d, psi);
+psi = 120; % Trajectory orientation from +X. [°]
+[trajectoryPoints, coveredArea] = generateCoverageTrajectory(vertices, h, d, psi);
+
+%% Remove paths
+
+rmpath("core\.")
+rmpath("decomposition\.")
+rmpath("geometry\.")
+rmpath("utils\.")
 
 %% ========== FIGURE PLOTS ========== 
 
@@ -103,6 +113,5 @@ lgd.Box = 'on';
 lgd.Color = 'white';
 lgd.EdgeColor = 'black';
 lgd.LineWidth = 1;
-
     
     

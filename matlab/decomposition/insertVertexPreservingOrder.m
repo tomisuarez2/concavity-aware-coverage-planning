@@ -1,4 +1,4 @@
-function [newVertices,newIndexConcavePoint,newPointIndex] = insertVertexPreservingOrder(vertices,concavePointIndex,newVertex)
+function [newVertices,newIndexConcavePoint,newPointIndex] = insertVertexPreservingOrder(vertices,concavePointIndex,previousPointIndex,newVertex)
 % INSERTVERTEXPRESERVINGORDER Inserts a new vertex into a polygon while
 % preserving clockwise ordering and updating reference indices.
 %
@@ -9,6 +9,7 @@ function [newVertices,newIndexConcavePoint,newPointIndex] = insertVertexPreservi
 % Input:
 %   vertices             : 2xN matrix of polygon vertices (clockwise order)
 %   concavePointIndex    : index of the reference (concave) vertex
+%   previousPointIndex   : index of the previous point
 %   newVertex            : 2x1 vector of the vertex to insert
 %
 % Output:
@@ -36,27 +37,42 @@ function [newVertices,newIndexConcavePoint,newPointIndex] = insertVertexPreservi
     if(~inserted)
 
         % Compute centroid
-        centroid = mean(vertices, 2);
+        %centroid = mean(vertices, 2);
 
         % Compute angles of existing points
-        angles = atan2(vertices(2,:) - centroid(2), ...
-                        vertices(1,:) - centroid(1));
+        %angles = atan2(vertices(2,:) - centroid(2), ...
+        %                vertices(1,:) - centroid(1));
 
         % Compute angle of new point
-        newAngle = atan2(newVertex(2) - centroid(2), ...
-                            newVertex(1) - centroid(1));
+        %newAngle = atan2(newVertex(2) - centroid(2), ...
+                            %newVertex(1) - centroid(1));
 
         % Append new point
-        extendedVertices = [vertices newVertex];
-        extendedAngles = [angles newAngle];
+        %extendedVertices = [vertices newVertex];
+        %extendedAngles = [angles newAngle];
 
         % Sort in descending order → clockwise orientation
-        [~, sortIndices] = sort(extendedAngles, 'descend');
+        %[~, sortIndices] = sort(extendedAngles, 'descend');
 
-        newVertices = extendedVertices(:,sortIndices);
+        %newVertices = extendedVertices(:,sortIndices);
+        N = size(vertices,2);
+        if previousPointIndex < N
+            newVertices = [vertices(:,1:previousPointIndex) newVertex vertices(:,previousPointIndex+1:end)];
+            newPointIndex = previousPointIndex+1;
+        else
+            newVertices = [newVertex vertices];
+            newPointIndex = 1;
+        end
+
+        if concavePointIndex < previousPointIndex
+            newIndexConcavePoint = concavePointIndex;
+        else
+            newIndexConcavePoint = circularIndex(concavePointIndex+1,N+1);
+        end
 
         % Update indices
-        newIndexConcavePoint = find(sortIndices == concavePointIndex);
-        newPointIndex = find(sortIndices == size(extendedVertices,2));
+        %newIndexConcavePoint = find(sortIndices == concavePointIndex);
+        %newPointIndex = find(sortIndices == size(extendedVertices,2));
+         
     end
 end

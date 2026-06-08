@@ -12,7 +12,8 @@ function [intersection] = computeHorizontalIntersectionFromConcaveVertex(vertice
 %   i        : index of the concave vertex
 %
 % Output:
-%   intersection : 2x1 vector containing the selected intersection point
+%   intersection : 3x1 vector containing the selected intersection point
+%   and the index of the previuos vertex where it should be in the array.
 
     % Circular indexing helper
     c = @(x, n) (1 + mod(x-1, n));
@@ -31,9 +32,9 @@ function [intersection] = computeHorizontalIntersectionFromConcaveVertex(vertice
     %==========================================================
     % Traverse polygon edges to find intersection candidates
     %==========================================================
-    intersection = zeros(2,2); % Max two valid intersections
-    intersection(:,1) = vertices(:,i); % Neutral initialization
-    intersection(:,2) = vertices(:,i);
+    intersection = zeros(3,2); % Max two valid intersections
+    intersection(1:2,1) = vertices(:,i); % Neutral initialization
+    intersection(1:2,2) = vertices(:,i);
 
     iAbsolut = 1;
 
@@ -63,12 +64,14 @@ function [intersection] = computeHorizontalIntersectionFromConcaveVertex(vertice
                 % Check if intersection lies within internal angle
                 if((thetaA - thetaP) < 0)
                     if(theta >= thetaA && theta <= thetaP)
-                        intersection(:,iAbsolut) = [x; yCurrent];
+                        intersection(1:2,iAbsolut) = [x; yCurrent];
+                        intersection(3,iAbsolut) = previousIndex;
                         iAbsolut = iAbsolut + 1;
                     end
                 else
                     if(theta >= thetaA || theta <= thetaP)
-                        intersection(:,iAbsolut) = [x; yCurrent];
+                        intersection(1:2,iAbsolut) = [x; yCurrent];
+                        intersection(3,iAbsolut) = previousIndex;
                         iAbsolut = iAbsolut + 1;
                     end
                 end
@@ -82,7 +85,7 @@ function [intersection] = computeHorizontalIntersectionFromConcaveVertex(vertice
     distance = zeros(1,size(intersection,2));
 
     for k = 1:length(distance)
-        distance(k) = norm(intersection(:,k) - vertices(:,i));
+        distance(k) = norm(intersection(1:2,k) - vertices(:,i));
     end
 
     [~,imax] = max(distance);

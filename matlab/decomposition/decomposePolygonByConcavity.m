@@ -62,11 +62,12 @@ function [reorganizedVertices,nMax] = decomposePolygonByConcavity(vertices,spray
             intersection = computeHorizontalIntersectionFromConcaveVertex(vertices,i);
 
             % Insert intersection point into polygon
-            [newVertices,newIndexConcavePoint,newPointIndex] = insertVertexPreservingOrder(vertices,i,intersection);
-
+            [newVertices,newIndexConcavePoint,newPointIndex] = insertVertexPreservingOrder(vertices,i,intersection(3),intersection(1:2));
+            
             % Split into two candidate subareas
             if(newIndexConcavePoint < newPointIndex)
                 zone1 = [newVertices(:,1:newIndexConcavePoint) newVertices(:,newPointIndex:end)];
+                %plot(polyshape(zone1(1,:), zone1(2,:)))
                 zone2 = newVertices(:,newIndexConcavePoint:newPointIndex);
             else
                 zone1 = [newVertices(:,1:newPointIndex) newVertices(:,newIndexConcavePoint:end)];

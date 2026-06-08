@@ -12,7 +12,6 @@ function [reducedPoints] = reducedArea(vertices,h)
 % Output:
 %   reducedPoints : 2xN matrix containing the vertices of the reduced polygon
 
-    c = @(x, n) (1 + mod(x-1, n)); % Circular indexing
     N = length(vertices);
 
     C = zeros(2,N);        % Direction of the vertex displacement
@@ -23,12 +22,12 @@ function [reducedPoints] = reducedArea(vertices,h)
 
     for i = 1 : N
 
-        previousIndex = c(i-1,N);
-        nextIndex = c(i+1,N);
+        previousIndex = circularIndex(i-1,N);
+        nextIndex     = circularIndex(i+1,N);
 
         % Adjacent edge vectors
         previousVector = vertices(:,previousIndex) - vertices(:,i);
-        nextVector = vertices(:,nextIndex) - vertices(:,i);
+        nextVector     = vertices(:,nextIndex)     - vertices(:,i);
 
         % Unit vectors along both edges
         d1 = previousVector/norm(previousVector);

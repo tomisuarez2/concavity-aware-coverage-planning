@@ -1,4 +1,4 @@
-function [trajectoryPoints, coveredArea] = generateCoverageTrajectory(waypoints, h, d, psi)
+function [trajectoryPoints, coveredArea] = generateCoverageTrajectory(vertices, h, d, psi)
 % GENERATECOVERAGETRAJECTORY Generates a coverage trajectory over a polygonal area.
 %
 % The function computes a lawnmower (back-and-forth) trajectory to cover a
@@ -7,10 +7,10 @@ function [trajectoryPoints, coveredArea] = generateCoverageTrajectory(waypoints,
 % scanline-based path generation.
 %
 % Input:
-%   waypoints : 2xN matrix defining the polygon vertices
-%   h         : inward offset distance (safety margin)
-%   d         : spray width (distance between scanlines)
-%   psi       : desired orientation angle (rad), 0 aligned with +X
+%   vertices : 2xN matrix defining the clockwise oredered polygon vertices
+%   h        : inward offset distance (safety margin)
+%   d        : spray width (distance between scanlines)
+%   psi      : desired orientation angle (rad), 0 aligned with +X
 %
 % Output:
 %   trajectoryPoints : 2xM matrix of trajectory points
@@ -19,27 +19,26 @@ function [trajectoryPoints, coveredArea] = generateCoverageTrajectory(waypoints,
     %==============================================================
     % Step 1: Reduce polygon (inward offset)
     %==============================================================
-    reducedPoints = reducedArea(waypoints, h);
-    coveredArea = polyshape(reducedPoints(1,:), reducedPoints(2,:));
+    reducedVertices = reducedArea(vertices, h);
+    coveredArea     = polyshape(reducedVertices(1,:), reducedVertices(2,:));
 
     %==============================================================
     % Step 2: Rotate polygon to align scan direction
     %==============================================================
-    centroid = mean(reducedPoints,2); % Polygon centroid
-    rotatedPoints = rotatePolygon(reducedPoints, centroid, -psi);
+    centroid        = mean(reducedVertices,2); % Polygon centroid
+    rotatedVertices = rotatePolygon(reducedVertices, centroid, -psi);
 
     %==============================================================
     % Step 3: Decompose polygon (remove concavities)
     %==============================================================
-    [subPolygonsPoints,maxPointNumber] = ...
-        decomposePolygonByConcavity(rotatedPoints,d);
+    [subPolygonsVertices,maxPointNumber] = decomposePolygonByConcavity(rotatedVertices,d);
 
     trajectoryPoints = zeros(2,maxPointNumber);
 
-    numberSubAreas = max(subPolygonsPoints(3,:));
+    numberSubAreas = max(subPolygonsVertices(3,:));
     start = 1;
     finish = 1;
-    nTotal = length(subPolygonsPoints(3,:));
+    nTotal = length(subPolygonsVertices(3,:));
     iAbsolut = 1;
 
     %==============================================================
@@ -51,7 +50,7 @@ function [trajectoryPoints, coveredArea] = generateCoverageTrajectory(waypoints,
 
         % Find indices corresponding to current subarea
         while (~flag && finish < nTotal)
-            if(subPolygonsPoints(3,finish) < a+1)
+            if(subPolygonsVertices(3,finish) < a+1)
                 finish = finish + 1;
             else
                 flag = true;
@@ -59,13 +58,13 @@ function [trajectoryPoints, coveredArea] = generateCoverageTrajectory(waypoints,
             end
         end
 
-        currentPolygonPoints = subPolygonsPoints(1:2,start:finish);
+        currentPolygonVertices = subPolygonsVertices(1:2,start:finish);
 
         % Reorder vertices so lowest point is first
-        currentPolygonPoints = reorderPolygonVertices(currentPolygonPoints);
+        currentPolygonVertices = reorderPolygonVertices(currentPolygonVertices);
 
-        yMinimun = min(currentPolygonPoints(2,:));
-        yMaximun = max(currentPolygonPoints(2,:));
+        yMinimun = min(currentPolygonVertices(2,:));
+        yMaximun = max(currentPolygonVertices(2,:));
 
         % Number of scanlines
         numberOfPaths = floor((yMaximun - yMinimun)/d);
@@ -76,7 +75,7 @@ function [trajectoryPoints, coveredArea] = generateCoverageTrajectory(waypoints,
             yCurrent = yMinimun + i*d - d/2;
 
             pointsToAdd = ...
-                computeHorizontalLineIntersections(currentPolygonPoints,yCurrent);
+                computeHorizontalLineIntersections(currentPolygonVertices,yCurrent);
 
             % Alternate direction (zig-zag)
             if(~(mod(i,2)>1e-2))

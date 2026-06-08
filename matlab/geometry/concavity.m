@@ -13,10 +13,9 @@ function [pointType] = concavity(vertices)
 %   pointType(2,:) : For concave vertices:
 %                       -1 -> Type 1
 %                        1 -> Type 2
-%                     (0 for convex vertices)
+%                   (0 for convex vertices)
 
     tolerance = 1e-6; % Numerical tolerance to avoid floating-point errors
-    c = @(x, n) (1 + mod(x-1, n)); % Circular indexing function
     N = length(vertices);
     pointType = zeros(2,N);
 
@@ -27,13 +26,13 @@ function [pointType] = concavity(vertices)
 
     for i = 1 : N
 
-        previousIndex = c(i-1,N);
-        nextIndex = c(i+1,N);
+        previousIndex  = circularIndex(i-1,N);
+        nextIndex      = circularIndex(i+1,N);
 
-        previousVector = vertices(:,i) - vertices(:,previousIndex);
-        nextVector = vertices(:,nextIndex) - vertices(:,i);
+        previousVector = vertices(:,i)         - vertices(:,previousIndex);
+        nextVector     = vertices(:,nextIndex) - vertices(:,i);
 
-        crossProduct = cross2D(previousVector, nextVector);
+        crossProduct   = cross2D(previousVector, nextVector);
 
         if(crossProduct > 0)
 
@@ -52,7 +51,8 @@ function [pointType] = concavity(vertices)
             % Approximate outward bisector direction
             bisector = (previousVector + nextVector)/norm(previousVector + nextVector);
 
-            % Angle of the bisector with respect to +X axis
+            % Angle of the bisector with respect to +X axis in degrees (we
+            % assume X axis is parallel to heading direction)
             phi = angleFromX(bisector);
 
             % Correct rotation angle to align the bisector with +X
@@ -65,15 +65,12 @@ function [pointType] = concavity(vertices)
             end
 
             % Rotate both adjacent vectors
-            previousVectorRot(1) = previousVector(1)*cosd(phiC) - previousVector(2)*sind(phiC);
-            previousVectorRot(2) = previousVector(1)*sind(phiC) + previousVector(2)*cosd(phiC);
-
-            nextVectorRot(1) = nextVector(1)*cosd(phiC) - nextVector(2)*sind(phiC);
-            nextVectorRot(2) = nextVector(1)*sind(phiC) + nextVector(2)*cosd(phiC);
+            previousVectorRot = rot2D(phiC,previousVector);
+            nextVectorRot     = rot2D(phiC,nextVector);
 
             % Compute angles with respect to +X axis
             thetaPrevious = angleFromX(previousVectorRot);
-            thetaNext = angleFromX(nextVectorRot);
+            thetaNext     = angleFromX(nextVectorRot);
 
             %==============================================================
             % Determine concavity type depending on angular ordering
