@@ -63,12 +63,10 @@ vertices = [[0;0],[-2;9],[4;11],[2;5],[9;3]];
 %% Vertices plot.
 
 % Plot parameters.
-lw_default = 2.5; 
-lw_auxiliary = 1.5; 
+lwAuxiliary = 1.5; 
 
-label_fontsize = 20; 
-title_fontsize = 34; 
-ticks_fontsize = 16; 
+titleFontsize = 34; 
+ticksFontsize = 16; 
 
 figure(1);
 ax_main = axes;
@@ -77,13 +75,13 @@ grid(ax_main, 'on');
 xlabel('X axis [u]')
 ylabel('Y axis [u]')
 title('Trajectory', ...
-    'FontSize', title_fontsize, ...
+    'FontSize', titleFontsize, ...
     'FontName', 'Times New Roman', ...
     'FontWeight', 'bold', ...
     'Interpreter', 'none', ...
     'Color', 'k');
-ax_main.FontSize = ticks_fontsize;
-ax_main.LineWidth = lw_auxiliary;
+ax_main.FontSize = ticksFontsize;
+ax_main.LineWidth = lwAuxiliary;
      
 plot([vertices(1,:) vertices(1,1)], [vertices(2,:) vertices(2,1)], 'Color', 'blue', 'Marker', 'o', 'LineWidth', 2, 'DisplayName', 'Vertices')
 
@@ -104,7 +102,19 @@ rmpath("utils\.")
 %% ========== FIGURE PLOTS ========== 
 
 plot(coveredArea, 'DisplayName', 'Covered Area')
-plot(trajectoryPoints(1,:),trajectoryPoints(2,:), 'Color', '#77AC30', 'LineWidth', 2, 'DisplayName', 'Trajectory')
+for k = 1:size(trajectoryPoints,2)-1
+    if mod(k,2) == 0
+        color = 'k'; % Black
+        lineStye = '--';
+        lineWidth = 1;
+    else
+        color = '#77AC30'; % Green
+        lineStye = '-';
+        lineWidth = 2;
+    end
+    aux = plot(trajectoryPoints(1,k:k+1),trajectoryPoints(2,k:k+1),'Color', color,'LineWidth', lineWidth, 'LineStyle', lineStye);
+    aux.Annotation.LegendInformation.IconDisplayStyle = 'off';
+end
 plot(trajectoryPoints(1,1), trajectoryPoints(2,1), 'Color', '#A2142F', 'LineWidth', 2, 'Marker', 'pentagram', 'DisplayName', 'Start point')
 plot(trajectoryPoints(1,end), trajectoryPoints(2,end), 'Color', '#4DBEEE', 'LineWidth', 2, 'Marker', 'pentagram', 'DisplayName', 'End point')
 

@@ -15,15 +15,12 @@ function [intersection] = computeHorizontalIntersectionFromConcaveVertex(vertice
 %   intersection : 3x1 vector containing the selected intersection point
 %   and the index of the previuos vertex where it should be in the array.
 
-    % Circular indexing helper
-    c = @(x, n) (1 + mod(x-1, n));
-
     N = length(vertices);
     yCurrent = vertices(2,i);
 
     % Vectors to adjacent vertices
-    vPrevious  = vertices(:,c(i-1,N)) - vertices(:,i);
-    vNext = vertices(:,c(i+1,N)) - vertices(:,i);
+    vPrevious  = vertices(:,circularIndex(i-1,N)) - vertices(:,i);
+    vNext = vertices(:,circularIndex(i+1,N)) - vertices(:,i);
 
     % Angular limits of the internal vertex region
     thetaA = angleFromX(vPrevious); 
@@ -40,7 +37,7 @@ function [intersection] = computeHorizontalIntersectionFromConcaveVertex(vertice
 
     for j = 1:N
 
-        previousIndex = c(j-1,N);
+        previousIndex = circularIndex(j-1,N);
 
         if(j ~= i && previousIndex ~= i)
 

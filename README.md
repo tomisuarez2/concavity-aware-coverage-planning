@@ -26,6 +26,10 @@ The repository includes an implementation in MATLAB, enabling algorithmic valida
 
 ![Example Trajectory](img/example_0deg.png)
 
+![Example Trajectory](img/example_120deg.png)
+
+![Example Trajectory](img/example_45deg.png)
+
 ---
 
 ## 🛰️ Contact

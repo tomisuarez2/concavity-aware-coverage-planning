@@ -13,9 +13,6 @@ function [intersection] = computeHorizontalLineIntersections(vertices, yCurrent)
 % Output:
 %   intersection : 2xM matrix containing intersection points
 
-    % Circular indexing helper
-    c = @(x, n) (1 + mod(x-1, n));
-
     intersection = [];
     N = length(vertices);
 
@@ -24,7 +21,7 @@ function [intersection] = computeHorizontalLineIntersections(vertices, yCurrent)
     %==========================================================
     for j = 1:N
 
-        previousIndex = c(j-1,N);
+        previousIndex = circularIndex(j-1,N);
 
         xj = vertices(1,j);
         yj = vertices(2,j);

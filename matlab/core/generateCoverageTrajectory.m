@@ -34,11 +34,12 @@ function [trajectoryPoints, coveredArea] = generateCoverageTrajectory(vertices, 
     [subPolygonsVertices,maxPointNumber] = decomposePolygonByConcavity(rotatedVertices,d);
 
     trajectoryPoints = zeros(2,maxPointNumber);
-
-    numberSubAreas = max(subPolygonsVertices(3,:));
+    
+    figuresIndices = subPolygonsVertices(3,:);
+    numberSubAreas = figuresIndices(end);
     start = 1;
     finish = 1;
-    nTotal = length(subPolygonsVertices(3,:));
+    nTotal = length(figuresIndices);
     iAbsolut = 1;
 
     %==============================================================
@@ -47,10 +48,10 @@ function [trajectoryPoints, coveredArea] = generateCoverageTrajectory(vertices, 
     for a = 1:numberSubAreas
 
         flag = false;
-
+        
         % Find indices corresponding to current subarea
         while (~flag && finish < nTotal)
-            if(subPolygonsVertices(3,finish) < a+1)
+            if(figuresIndices(finish) < a+1)
                 finish = finish + 1;
             else
                 flag = true;
@@ -67,7 +68,7 @@ function [trajectoryPoints, coveredArea] = generateCoverageTrajectory(vertices, 
         yMaximun = max(currentPolygonVertices(2,:));
 
         % Number of scanlines
-        numberOfPaths = floor((yMaximun - yMinimun)/d);
+        numberOfPaths = round((yMaximun - yMinimun)/d);
 
         % Generate horizontal sweep (lawnmower pattern)
         for i = numberOfPaths : -1 : 1 
