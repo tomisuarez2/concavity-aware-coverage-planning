@@ -3,8 +3,7 @@ function [newVertices,newIndexConcavePoint,newPointIndex] = insertVertexPreservi
 % preserving clockwise ordering and updating reference indices.
 %
 % If the point already exists, no insertion is performed. Otherwise, the
-% point is inserted and all vertices are reordered based on their angle
-% with respect to the centroid to maintain clockwise ordering.
+% point is inserted.
 %
 % Input:
 %   vertices             : 2xN matrix of polygon vertices (clockwise order)
@@ -36,25 +35,6 @@ function [newVertices,newIndexConcavePoint,newPointIndex] = insertVertexPreservi
     %==============================================================
     if(~inserted)
 
-        % Compute centroid
-        %centroid = mean(vertices, 2);
-
-        % Compute angles of existing points
-        %angles = atan2(vertices(2,:) - centroid(2), ...
-        %                vertices(1,:) - centroid(1));
-
-        % Compute angle of new point
-        %newAngle = atan2(newVertex(2) - centroid(2), ...
-                            %newVertex(1) - centroid(1));
-
-        % Append new point
-        %extendedVertices = [vertices newVertex];
-        %extendedAngles = [angles newAngle];
-
-        % Sort in descending order → clockwise orientation
-        %[~, sortIndices] = sort(extendedAngles, 'descend');
-
-        %newVertices = extendedVertices(:,sortIndices);
         N = size(vertices,2);
         if previousPointIndex < N
             newVertices = [vertices(:,1:previousPointIndex) newVertex vertices(:,previousPointIndex+1:end)];
@@ -69,10 +49,6 @@ function [newVertices,newIndexConcavePoint,newPointIndex] = insertVertexPreservi
         else
             newIndexConcavePoint = circularIndex(concavePointIndex+1,N+1);
         end
-
-        % Update indices
-        %newIndexConcavePoint = find(sortIndices == concavePointIndex);
-        %newPointIndex = find(sortIndices == size(extendedVertices,2));
-         
+        
     end
 end
